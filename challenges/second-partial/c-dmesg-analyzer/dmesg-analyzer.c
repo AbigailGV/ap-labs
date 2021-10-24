@@ -8,8 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define REPORT_FILE "file.txt"
 #define HASHSIZE 1024
+#define REPORT_FILE "file.txt"
 
 struct Node
 {
@@ -25,6 +25,15 @@ struct nlist{
     struct Node *vals;
 };
 
+void push(struct Node** head_ref, char *new_data)
+{
+    struct Node* new_node = (struct Node*)calloc(1,sizeof(struct Node));
+  
+    new_node->data  =strdup(new_data);
+    new_node->next = (*head_ref);
+    (*head_ref)    = new_node;
+}
+
 static struct nlist *hashtablee[HASHSIZE];
 
 unsigned hash(char *s){
@@ -33,6 +42,17 @@ unsigned hash(char *s){
         hashvalue = *s + 31 * hashvalue;
     }
     return hashvalue % HASHSIZE;
+}
+
+// estructura de nlist
+struct nlist *lookup(char *s){
+    struct nlist *np;
+    for(np = hashtablee[hash(s)]; np != NULL; np = np->next){
+        if(strcmp(s, np->name) == 0){
+            return np; 
+        }
+    }
+    return NULL; 
 }
 
 struct nlist *install(char *name, char *defi){
@@ -55,16 +75,7 @@ struct nlist *install(char *name, char *defi){
     return np;
 }
 
-// estructura de nlist
-struct nlist *lookup(char *s){
-    struct nlist *np;
-    for(np = hashtablee[hash(s)]; np != NULL; np = np->next){
-        if(strcmp(s, np->name) == 0){
-            return np; 
-        }
-    }
-    return NULL; 
-}
+
 
 struct data{
     char *category; 
@@ -138,7 +149,7 @@ void analizeLog(char *logFile, char *report);
 int main(int argc, char **argv) {
 
     if (argc < 2) {
-	printf("No text file recieved.\n Correct: ./dmesg-analizer logfile.txt\n");
+	printf("Usage:./dmesg-analizer logfile.txt\n");
 	return 1;
     }
 
@@ -220,3 +231,4 @@ void analizeLog(char *logFile, char *report) {
     // notify user 
     printf("Report is generated at: [%s]\n", report);
 }
+// References: https://www.geeksforgeeks.org/generic-linked-list-in-c-2/
