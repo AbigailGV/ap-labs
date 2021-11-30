@@ -2,7 +2,7 @@
 
 ## How to Build the challenge
 
-    run gcc -Wall -pthread space-invaders.c -o space-invaders.o
+    run `gcc -Wall -pthread space-invaders.c -o space-invaders.o`
 
 ## How to Run the challenge
 
